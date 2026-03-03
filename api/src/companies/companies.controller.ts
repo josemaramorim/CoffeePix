@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { CompaniesService } from './companies.service';
+import { CreateCompanyDto } from './dto/create-company.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
@@ -25,8 +26,10 @@ export class CompaniesController {
 
   @Roles('SAAS_ADMIN')
   @Post()
-  async create(@Body() createCompanyDto: { name: string; cnpj: string }) {
-    return this.companiesService.create(createCompanyDto);
+  async create(@Body() createCompanyDto: CreateCompanyDto) {
+    // enviar apenas os campos aceitos pelo service/prisma
+    const payload = { name: createCompanyDto.name, cnpj: createCompanyDto.cnpj };
+    return this.companiesService.create(payload);
   }
 
   @Roles('SAAS_ADMIN')
@@ -49,7 +52,7 @@ export class CompaniesController {
   @Put(':id')
   async update(
     @Param('id') id: string,
-    @Body() updateCompanyDto: { name?: string; status?: string },
+    @Body() updateCompanyDto: Partial<CreateCompanyDto> & { status?: string },
     @CurrentUser() user: AppUser,
   ) {
     // Isolamento ABAC: COMPANY_ADMIN só pode editar a própria empresa
