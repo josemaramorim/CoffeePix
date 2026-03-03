@@ -8,7 +8,12 @@ import { CompaniesModule } from './companies/companies.module';
 import { ClientsModule } from './clients/clients.module';
 import { MachinesModule } from './machines/machines.module';
 import { ProductsModule } from './products/products.module';
-import { I18nModule, AcceptLanguageResolver, QueryResolver, HeaderResolver } from 'nestjs-i18n';
+import {
+  I18nModule,
+  AcceptLanguageResolver,
+  QueryResolver,
+  HeaderResolver,
+} from 'nestjs-i18n';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -47,4 +52,4 @@ import * as fs from 'fs';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}
