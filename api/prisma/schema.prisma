@@ -82,6 +82,7 @@ model Machine {
   created_at    DateTime      @default(now())
   updated_at    DateTime      @updatedAt
   transactions  Transaction[]
+  requests      MachineRequest[]
 
   @@map("machines")
 }
