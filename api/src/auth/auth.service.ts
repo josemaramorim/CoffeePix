@@ -14,10 +14,20 @@ export class AuthService {
   async validateUser(email: string, pass: string): Promise<AppUser | null> {
     const user = await this.usersService.findByEmail(email);
     if (user && (await bcrypt.compare(pass, user.password_hash))) {
-      const cloned = { ...(user as unknown as Record<string, unknown>) };
-      // remove password before returning
-      delete (cloned as Record<string, unknown>)['password_hash'];
-      return cloned as AppUser;
+      const roleName =
+        typeof (user as any).role === 'string'
+          ? (user as any).role
+          : ((user as any).role as { name?: string })?.name;
+
+      const result: AppUser = {
+        id: (user as any).id,
+        email: (user as any).email,
+        role: roleName ?? '',
+        company_id: (user as any).company_id,
+        client_id: (user as any).client_id,
+      };
+
+      return result;
     }
     return null;
   }

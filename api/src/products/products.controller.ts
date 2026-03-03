@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { ProductsService } from './products.service';
+import { CreateProductDto } from './dto/create-product.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
@@ -26,14 +27,17 @@ export class ProductsController {
   @Post()
   async create(
     @Body()
-    createProductDto: { name: string; price: number; company_id: string },
+    createProductDto: CreateProductDto,
     @CurrentUser() user: AppUser,
   ) {
-    return this.productsService.create(
-      createProductDto,
-      user.role,
-      user.company_id,
-    );
+    // converter preço em reais para centavos (Int) exigido pelo Prisma
+    const priceInCents = Math.round((createProductDto.price ?? 0) * 100);
+    const payload = {
+      name: createProductDto.name,
+      price: priceInCents,
+      company_id: createProductDto.company_id,
+    };
+    return this.productsService.create(payload, user.role, user.company_id ?? '');
   }
 
   @Roles('SAAS_ADMIN', 'COMPANY_ADMIN', 'CLIENT_ADMIN')
@@ -41,8 +45,8 @@ export class ProductsController {
   async findAll(@CurrentUser() user: AppUser) {
     return this.productsService.findAll(
       user.role,
-      user.company_id,
-      user.client_id,
+      user.company_id ?? '',
+      user.client_id ?? '',
     );
   }
 
@@ -52,8 +56,8 @@ export class ProductsController {
     return this.productsService.findOne(
       id,
       user.role,
-      user.company_id,
-      user.client_id,
+      user.company_id ?? '',
+      user.client_id ?? '',
     );
   }
 
@@ -61,14 +65,13 @@ export class ProductsController {
   @Put(':id')
   async update(
     @Param('id') id: string,
-    @Body() updateProductDto: { name?: string; price?: number },
+    @Body() updateProductDto: Partial<CreateProductDto>,
     @CurrentUser() user: AppUser,
   ) {
-    return this.productsService.update(
-      id,
-      updateProductDto,
-      user.role,
-      user.company_id,
-    );
+    const payload: { name?: string; price?: number } = {};
+    if (updateProductDto.name !== undefined) payload.name = updateProductDto.name;
+    if (updateProductDto.price !== undefined)
+      payload.price = Math.round(updateProductDto.price * 100);
+    return this.productsService.update(id, payload, user.role, user.company_id ?? '');
   }
 }

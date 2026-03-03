@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { MachinesService } from './machines.service';
+import { CreateMachineDto } from './dto/create-machine.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
@@ -26,18 +27,13 @@ export class MachinesController {
   @Post()
   async create(
     @Body()
-    createMachineDto: {
-      serial_number: string;
-      model?: string;
-      client_id: string;
-      company_id: string;
-    },
+      createMachineDto: CreateMachineDto,
     @CurrentUser() user: AppUser,
   ) {
     return this.machinesService.create(
       createMachineDto,
       user.role,
-      user.company_id,
+      user.company_id ?? '',
     );
   }
 
@@ -46,8 +42,8 @@ export class MachinesController {
   async findAll(@CurrentUser() user: AppUser) {
     return this.machinesService.findAll(
       user.role,
-      user.company_id,
-      user.client_id,
+      user.company_id ?? '',
+      user.client_id ?? '',
     );
   }
 
@@ -57,8 +53,8 @@ export class MachinesController {
     return this.machinesService.findOne(
       id,
       user.role,
-      user.company_id,
-      user.client_id,
+      user.company_id ?? '',
+      user.client_id ?? '',
     );
   }
 
@@ -66,14 +62,14 @@ export class MachinesController {
   @Put(':id')
   async update(
     @Param('id') id: string,
-    @Body() updateMachineDto: { status?: string; client_id?: string },
+    @Body() updateMachineDto: Partial<CreateMachineDto>,
     @CurrentUser() user: AppUser,
   ) {
     return this.machinesService.update(
       id,
       updateMachineDto,
       user.role,
-      user.company_id,
+      user.company_id ?? '',
     );
   }
 }
