@@ -1,0 +1,10 @@
+{
+  "VALIDATION": {
+    "IS_EMAIL": "O e-mail fornecido é inválido.",
+    "IS_STRING": "Este campo deve ser um texto.",
+    "IS_NOT_EMPTY": "Este campo não pode estar vazio."
+  },
+  "AUTH": {
+    "INVALID_CREDENTIALS": "As credenciais fornecidas são inválidas."
+  }
+}
