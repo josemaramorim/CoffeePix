@@ -44,6 +44,8 @@ O banco de dados deve refletir a hierarquia e garantir Row-Level Security (RLS) 
 ## 2. Arquitetura e Fluxo de Pagamentos Pix (Orquestração)
 
 **Stack Backend**: Node.js + NestJS, PostgreSQL, Redis (para caching, rate limit e pub/sub de status). 
+**Testes Backend**: Swagger (OpenAPI) para documentação interativa e testes manuais dos endpoints.
+**Internacionalização (i18n)**: Módulo `nestjs-i18n` para suporte a múltiplos idiomas em mensagens de erro e respostas da API.
 
 ### Fluxo de Pagamento na Máquina JL22:
 1. **Início**: Cliente seleciona o café na JL22.
@@ -73,6 +75,8 @@ O Dashboard será construído em React com Next.js (App Router). Terá rotas din
 - **`/company`** (COMPANY_ADMIN): Visão da Empresa (Gestão de máquinas, clientes/pontos, catálogo, relatórios de vendas da empresa).
 - **`/client`** (CLIENT_ADMIN): Visão do Ponto (Suas máquinas, extrato apenas de suas transações, formulário para configurar credencial Pix).
 
+*Visual e UI*: **Shadcn UI** integrado com Tailwind CSS. Garante componentes modernos, responsivos, acessíveis e com suporte nativo a temas (Light Mode / Dark Mode).
+*Internacionalização (i18n)*: **`next-intl`** para prover suporte multi-idioma nas interfaces do Dashboard.
 *Autenticação*: JWT em cookies HTTP-Only ou LocalStorage (dependendo da preferência de SSR vs SPA).
 
 ---

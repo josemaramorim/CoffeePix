@@ -1,0 +1,10 @@
+{
+    "VALIDATION": {
+        "IS_EMAIL": "The provided email is invalid.",
+        "IS_STRING": "This field must be a string.",
+        "IS_NOT_EMPTY": "This field cannot be empty."
+    },
+    "AUTH": {
+        "INVALID_CREDENTIALS": "The provided credentials are invalid."
+    }
+}
