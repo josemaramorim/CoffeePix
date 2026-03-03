@@ -14,6 +14,7 @@ import {
   QueryResolver,
   HeaderResolver,
 } from 'nestjs-i18n';
+import { PaymentsModule } from './payments/payments.module';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -26,6 +27,7 @@ import * as fs from 'fs';
     ClientsModule,
     MachinesModule,
     ProductsModule,
+    PaymentsModule,
     I18nModule.forRoot({
       fallbackLanguage: 'pt-BR',
       loaderOptions: {

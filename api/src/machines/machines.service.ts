@@ -100,4 +100,17 @@ export class MachinesService {
       data,
     });
   }
+
+  // Machine request inspection methods
+  async getMachineRequests(id: string, limit = 50) {
+    return this.prisma.machineRequest.findMany({
+      where: { machine_id: id },
+      orderBy: { created_at: 'desc' },
+      take: limit,
+    });
+  }
+
+  async getMachineRequest(id: string, reqId: string) {
+    return this.prisma.machineRequest.findUnique({ where: { id: reqId } });
+  }
 }
