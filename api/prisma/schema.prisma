@@ -86,6 +86,17 @@ model Machine {
   @@map("machines")
 }
 
+model MachineRequest {
+  id         String   @id @default(uuid())
+  machine_id String
+  machine    Machine  @relation(fields: [machine_id], references: [id])
+  payload    Json
+  headers    Json
+  created_at DateTime @default(now())
+
+  @@map("machine_requests")
+}
+
 model Product {
   id           String        @id @default(uuid())
   name         String

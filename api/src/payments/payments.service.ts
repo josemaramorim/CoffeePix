@@ -15,6 +15,9 @@ export class PaymentsService {
 
     const amount = product.price; // already stored in cents
 
+    // store incoming request sample for inspection (payload/headers)
+    // Note: the controller should pass raw payload/headers via prisma creation
+    // We'll create a transaction and return placeholder payload
     const tx = await this.prisma.transaction.create({
       data: {
         machine_id: machine.id,
@@ -26,7 +29,6 @@ export class PaymentsService {
       },
     });
 
-    // placeholder QR/payload — real implementation calls gateway using client's payment_config
     const payload = { qr: 'PLACEHOLDER_QR_CODE', expires_in: 90 };
 
     return { transaction: tx, payload };

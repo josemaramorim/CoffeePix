@@ -72,4 +72,17 @@ export class MachinesController {
       user.company_id ?? '',
     );
   }
+
+  @Roles('SAAS_ADMIN', 'COMPANY_ADMIN', 'CLIENT_ADMIN')
+  @Get(':id/requests')
+  async getRequests(@Param('id') id: string, @CurrentUser() user: AppUser) {
+    // RBAC enforced in service
+    return this.machinesService.getMachineRequests(id);
+  }
+
+  @Roles('SAAS_ADMIN', 'COMPANY_ADMIN', 'CLIENT_ADMIN')
+  @Get(':id/requests/:reqId')
+  async getRequest(@Param('id') id: string, @Param('reqId') reqId: string, @CurrentUser() user: AppUser) {
+    return this.machinesService.getMachineRequest(id, reqId);
+  }
 }
