@@ -7,6 +7,7 @@ import {
   Headers,
   Res,
   HttpStatus,
+  BadRequestException,
 } from '@nestjs/common';
 import { ApiTags, ApiBody, ApiHeader } from '@nestjs/swagger';
 import { PaymentsService } from './payments.service';
@@ -29,12 +30,35 @@ export class PaymentsController {
     @Headers() headers?: Record<string, any>,
     @Res() res?: Response,
   ) {
+    // support two payload shapes:
+    // 1) { machine_id, product_id }
+    // 2) { url: 'https://.../?machine_id=...&product_id=...' }
+
+    let machineId = body.machine_id as string | undefined;
+    let productId = body.product_id as string | undefined;
+
+    if (!machineId || !productId) {
+      if (body.url) {
+        try {
+          const parsed = new URL(body.url);
+          machineId = parsed.searchParams.get('machine_id') ?? undefined;
+          productId = parsed.searchParams.get('product_id') ?? undefined;
+        } catch (e) {
+          throw new BadRequestException('Invalid url format');
+        }
+      }
+    }
+
+    if (!machineId || !productId) {
+      throw new BadRequestException('machine_id and product_id are required (either in body or url query)');
+    }
+
     // Persist raw payload + headers for inspection (machine_requests)
     let reqRecord: { id: string } | null = null;
     try {
       reqRecord = await this.prisma.machineRequest.create({
         data: {
-          machine_id: body.machine_id,
+          machine_id: machineId,
           payload: body as any,
           headers: headers as any,
         },
@@ -44,7 +68,7 @@ export class PaymentsController {
       // ignore if prisma model not migrated yet
     }
 
-    const result = await this.paymentsService.requestPayment(body.machine_id, body.product_id);
+    const result = await this.paymentsService.requestPayment(machineId, productId);
 
     const reqId = reqRecord?.id ?? null;
 
@@ -56,7 +80,7 @@ export class PaymentsController {
 
     if (res) {
       if (reqId) {
-        res.setHeader('Location', `/public/machines/${body.machine_id}/requests/${reqId}`);
+        res.setHeader('Location', `/public/machines/${machineId}/requests/${reqId}`);
       }
       return res.status(HttpStatus.CREATED).json(responseBody);
     }
