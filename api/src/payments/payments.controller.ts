@@ -3,6 +3,7 @@ import {
   Post,
   Body,
   Get,
+  Query,
   Param,
   Headers,
   Res,
@@ -86,6 +87,29 @@ export class PaymentsController {
     }
 
     return responseBody;
+  }
+
+  @Get('request')
+  async requestPaymentGet(
+    @Query('url') url?: string,
+    @Query('machine_id') machine_id?: string,
+    @Query('product_id') product_id?: string,
+    @Headers('x-hmac-signature') hmac?: string,
+    @Headers() headers?: Record<string, any>,
+    @Res() res?: Response,
+  ) {
+    // Accept either: ?machine_id=...&product_id=... OR ?url=... (containing those params)
+    if (machine_id && product_id) {
+      const body = { machine_id, product_id } as any;
+      return this.requestPayment(body, hmac, headers, res);
+    }
+
+    if (url) {
+      const body = { url } as any;
+      return this.requestPayment(body, hmac, headers, res);
+    }
+
+    throw new BadRequestException('Provide either url or both machine_id and product_id as query parameters');
   }
 
   @Get(':id/status')
